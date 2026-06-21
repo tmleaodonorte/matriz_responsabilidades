@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matriz RACI — Toastmasters Leão do Norte</title>
+<style>
+  :root {
+    --teal-bg: #E1F5EE;
+    --teal-text: #085041;
+    --amber-bg: #FAEEDA;
+    --amber-text: #854F0B;
+    --blue-bg: #E6F1FB;
+    --blue-text: #185FA5;
+    --gray-text: #5F5E5A;
+    --dark-text: #2C2C2A;
+    --purple-text: #3C3489;
+    --border: #E0DED5;
+    --bg-page: #FAF9F6;
+    --bg-card: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg-page);
+    color: var(--dark-text);
+    margin: 0;
+    padding: 24px 16px 60px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  .subtitle { color: var(--gray-text); font-size: 14px; margin: 0 0 20px; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--gray-text);
+  }
+  .legend span.swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .swatch.r { background: var(--teal-bg); border: 1px solid var(--teal-text); }
+  .swatch.c { background: var(--amber-bg); border: 1px solid var(--amber-text); }
+  .swatch.i { background: var(--blue-bg); border: 1px solid var(--blue-text); }
+
+  #view-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+  }
+  #view-tabs button {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border: none;
+    background: none;
+    color: var(--gray-text);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s ease;
+  }
+  #view-tabs button:hover { color: var(--purple-text); }
+  #view-tabs button.active {
+    color: var(--purple-text);
+    border-bottom-color: var(--purple-text);
+  }
+
+  #chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  #chips button {
+    font-size: 13px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--dark-text);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  #chips button:hover { border-color: var(--purple-text); }
+  #chips button.active {
+    background: var(--purple-text);
+    color: #fff;
+    border-color: var(--purple-text);
+    font-weight: 600;
+  }
+
+  .group-title { font-size: 13px; font-weight: 600; margin: 18px 0 8px; }
+  .group-title.r { color: var(--teal-text); }
+  .group-title.c { color: var(--amber-text); }
+  .group-title.i { color: var(--blue-text); }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+  .item .tag {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .item .tag.r { background: var(--teal-bg); color: var(--teal-text); }
+  .item .tag.c { background: var(--amber-bg); color: var(--amber-text); }
+  .item .tag.i { background: var(--blue-bg); color: var(--blue-text); }
+
+  .empty { font-size: 14px; color: var(--gray-text); font-style: italic; }
+
+  .section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--purple-text);
+    margin: 26px 0 12px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .activity-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .activity-card .task {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .role-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+  .role-row .key {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 5px;
+    width: 14px;
+    text-align: center;
+  }
+  .role-row .key.r { background: var(--teal-bg); color: var(--teal-text); }
+  .role-row .key.c { background: var(--amber-bg); color: var(--amber-text); }
+  .role-row .key.i { background: var(--blue-bg); color: var(--blue-text); }
+  .role-row .roles { color: var(--dark-text); }
+  .role-row .none { color: var(--gray-text); font-style: italic; }
+
+  .footer-note {
+    margin-top: 32px;
+    font-size: 12px;
+    color: var(--gray-text);
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  #search {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Matriz RACI — Toastmasters Leão do Norte</h1>
+  <p class="subtitle">Guia de responsabilidades · Gestão 2025/2026 · Atualizado com a versão mais recente da planilha</p>
+
+  <div class="legend">
+    <div><span class="swatch r"></span>Responsável (faz)</div>
+    <div><span class="swatch c"></span>Apoia / é consultado</div>
+    <div><span class="swatch i"></span>É informado</div>
+  </div>
+
+  <div id="view-tabs">
+    <button id="tab-role" class="active">Por função</button>
+    <button id="tab-activity">Por atividade / indicador</button>
+  </div>
+
+  <div id="role-view">
+    <div id="chips"></div>
+    <div id="content"></div>
+  </div>
+
+  <div id="activity-view" style="display:none;">
+    <input id="search" type="text" placeholder="Buscar atividade ou indicador..." />
+    <div id="activity-content"></div>
+  </div>
+
+  <div class="footer-note">
+    Gerado a partir da matriz "Processos TM LdoN" (versão mais recente, incluindo a seção 3 — Reunião do Clube, confirmada manualmente). Em caso de dúvida sobre alguma atribuição, confira a planilha original do clube.
+  </div>
+</div>
+
+<script>
+// ---------- Data: by activity (source of truth, grouped by section) ----------
+const activityData = {
+  "Indicadores": [
+    ["Métricas gerais do DCP", { R: ["Presidente"], C: [], I: [] }],
+    ["NPS (net promoter score) - média", { R: ["Presidente"], C: [], I: [] }],
+    ["Taxa % de consideração (leads → reunião)", { R: ["VP Membresia"], C: [], I: [] }],
+    ["Taxa % de conversão (reunião → membresia)", { R: ["VP Membresia"], C: [], I: [] }],
+    ["Métricas educacionais do DCP (progresso dos membros)", { R: ["VP Educação"], C: [], I: [] }],
+    ["Nº de pessoas no Grupo de Convidados - WhatsApp", { R: ["VP Relações Públicas"], C: [], I: [] }],
+    ["Resultado financeiro - cash flow", { R: ["Tesoureiro(a)"], C: [], I: [] }]
+  ],
+  "Aquisição & Onboarding": [
+    ["Abordar os potenciais novos membros (leads)", { R: ["VP Membresia"], C: [], I: [] }],
+    ["Autorizar entrada no grupo de convidados do WhatsApp", { R: ["VP Membresia"], C: [], I: [] }],
+    ["Atualizar os leads no Quadro de Aquisição (Trello)", { R: ["VP Membresia"], C: [], I: ["Tesoureiro(a)"] }],
+    ["Receber e enviar pagamento de novo(a) membro para o TM", { R: ["Tesoureiro(a)"], C: [], I: ["Presidente","VP Membresia","VP Educação","VP Relações Públicas","Sargento de Armas","Secretário(a)"] }],
+    ["Enviar 'pacote de boas-vindas' ao novo(a) membro (landing page)", { R: ["Presidente"], C: [], I: ["VP Educação","VP Relações Públicas"] }],
+    ["Cadastrar novo(a) membro no easySpeak e dar acesso ao Google Drive", { R: ["Presidente"], C: [], I: [] }],
+    ["Orientar sobre acesso e uso do portal TM e definição de Trilha", { R: ["VP Educação"], C: ["Secretário(a)"], I: [] }],
+    ["Apresentar novo(a) membro na Reunião de Clube", { R: ["Presidente"], C: [], I: [] }],
+    ["Divulgar novo(a) membro nas redes sociais", { R: ["VP Relações Públicas"], C: [], I: [] }],
+    ["Definir \"padrinho\" para integração de novo(a) membro(a)", { R: ["VP Educação"], C: ["Presidente","VP Membresia","VP Relações Públicas","Sargento de Armas","Tesoureiro(a)","Secretário(a)"], I: [] }]
+  ],
+  "Desenvolvimento & Retenção": [
+    ["Promover pesquisas de satisfação trimestrais e feedback de membros que deixam o clube", { R: ["VP Membresia"], C: ["Presidente","VP Educação","VP Relações Públicas","Sargento de Armas"], I: [] }],
+    ["Gerenciar a agenda de discursos (easySpeak)", { R: ["VP Educação"], C: [], I: ["Presidente"] }],
+    ["Registrar e acompanhar progresso educacional dos membros (Trilha/Nível/Projeto)", { R: ["VP Educação"], C: [], I: ["Presidente"] }],
+    ["Divulgar progressos dos membros e datas importantes nas redes sociais", { R: ["VP Relações Públicas"], C: ["VP Educação","Sargento de Armas"], I: ["Presidente"] }],
+    ["Promover e organizar os Campeonatos de Discurso do Distrito", { R: ["Sargento de Armas"], C: ["VP Educação"], I: ["Presidente","VP Relações Públicas"] }],
+    ["Mapeamento da intenção de Renovação", { R: ["VP Membresia"], C: ["VP Educação"], I: ["Presidente"] }],
+    ["Criar e promover a campanha de renovação", { R: ["Sargento de Armas"], C: ["Presidente","VP Relações Públicas"], I: [] }],
+    ["Criar, promover e organizar eventos extras (workshops, seminários, palestras)", { R: ["Sargento de Armas"], C: ["Presidente","VP Educação"], I: [] }],
+    ["Coordenar o programa de mentoria", { R: ["VP Educação"], C: ["Presidente"], I: [] }]
+  ],
+  "Reunião do Clube": [
+    ["Postar as chamadas da reunião no grupo de Convidados do WhatsApp c/ link de acesso", { R: ["Sargento de Armas"], C: [], I: [] }],
+    ["Indicar o Toastmaster do Dia e Zoom Master", { R: ["VP Educação"], C: [], I: [] }],
+    ["Indicar ao TM do Dia os novos membros e reconhecimentos para a apresentação da reunião", { R: ["Presidente"], C: ["VP Educação"], I: [] }],
+    ["Garantir o preenchimento das funções da reunião", { R: ["Toastmaster do Dia"], C: ["VP Educação"], I: [] }],
+    ["Entrar em contato com seu Avaliador no mínimo 1 dia antes da reunião", { R: ["Oradores"], C: [], I: [] }],
+    ["Abrir a sala de reunião (plataforma on-line Zoom)", { R: ["Secretário(a)"], C: [], I: [] }],
+    ["Organizar e disponibilizar os registros da reunião no Drive (certificados, formulários, agenda)", { R: ["Zoom Master"], C: ["Secretário(a)"], I: [] }],
+    ["Conversar com visitantes e convidados pós-reunião e pegar os contatos", { R: ["VP Membresia"], C: ["Presidente"], I: [] }],
+    ["Enviar aos vencedores e disponibilizar no Drive os Certificados de Campeões da Reunião", { R: ["Zoom Master"], C: ["Secretário(a)"], I: [] }],
+    ["Enviar aos Oradores as planilhas de feedback do discurso (formulário)", { R: ["Zoom Master"], C: ["Secretário(a)"], I: [] }],
+    ["Enviar aos Oradores a Avaliação Formal do Projeto", { R: ["Avaliadores"], C: ["Secretário(a)"], I: [] }],
+    ["Disponibilizar a gravação da reunião na Playlist do Canal do Clube no YouTube", { R: ["Secretário(a)"], C: [], I: [] }],
+    ["Revisar e fechar a reunião no easySpeak", { R: ["VP Educação"], C: [], I: [] }]
+  ]
+};
+
+const labels = { R: "Responsável", C: "Apoia", I: "Informado" };
+
+// ---------- Derive role-centric data from activityData (single source of truth) ----------
+const ALL_ROLES = [
+  "Presidente","VP Membresia","VP Educação","VP Relações Públicas","Sargento de Armas",
+  "Tesoureiro(a)","Secretário(a)","Toastmaster do Dia","Zoom Master","Avaliadores","Oradores"
+];
+
+function buildRoleData() {
+  const roleData = {};
+  ALL_ROLES.forEach(r => { roleData[r] = { R: [], C: [], I: [] }; });
+
+  Object.entries(activityData).forEach(([section, activities]) => {
+    activities.forEach(([task, roles]) => {
+      ["R","C","I"].forEach(key => {
+        (roles[key] || []).forEach(role => {
+          if (roleData[role]) {
+            roleData[role][key].push([section, task]);
+          }
+        });
+      });
+    });
+  });
+
+  return roleData;
+}
+
+const roleData = buildRoleData();
+
+// ---------- Role view rendering ----------
+const chipsEl = document.getElementById("chips");
+const contentEl = document.getElementById("content");
+let activeRole = "Presidente";
+
+function renderRoleView() {
+  chipsEl.querySelectorAll("button").forEach(b => {
+    b.classList.toggle("active", b.dataset.role === activeRole);
+  });
+  const rd = roleData[activeRole];
+  let html = "";
+  ["R","C","I"].forEach(key => {
+    const items = rd[key];
+    if (!items || items.length === 0) return;
+    html += '<div class="group-title ' + key.toLowerCase() + '">' + labels[key] + ' (' + items.length + ')</div>';
+    items.forEach(([section, task]) => {
+      html += '<div class="item"><span class="tag ' + key.toLowerCase() + '">' + section + '</span><span>' + task + '</span></div>';
+    });
+  });
+  if (!html) html = '<p class="empty">Nenhuma atribuição registrada para esta função.</p>';
+  contentEl.innerHTML = html;
+}
+
+ALL_ROLES.forEach(role => {
+  const btn = document.createElement("button");
+  btn.dataset.role = role;
+  btn.textContent = role;
+  btn.addEventListener("click", () => { activeRole = role; renderRoleView(); });
+  chipsEl.appendChild(btn);
+});
+renderRoleView();
+
+// ---------- Activity view rendering ----------
+const activityContentEl = document.getElementById("activity-content");
+const searchEl = document.getElementById("search");
+
+function roleListHtml(key, roles) {
+  const k = key.toLowerCase();
+  const rolesHtml = roles.length
+    ? '<span class="roles">' + roles.join(", ") + '</span>'
+    : '<span class="none">—</span>';
+  return '<div class="role-row"><span class="key ' + k + '">' + key + '</span>' + rolesHtml + '</div>';
+}
+
+function renderActivityView(filter) {
+  const f = (filter || "").trim().toLowerCase();
+  let html = "";
+  Object.entries(activityData).forEach(([section, activities]) => {
+    const filtered = f
+      ? activities.filter(([task]) => task.toLowerCase().includes(f) || section.toLowerCase().includes(f))
+      : activities;
+    if (filtered.length === 0) return;
+    html += '<div class="section-title">' + section + '</div>';
+    filtered.forEach(([task, roles]) => {
+      html += '<div class="activity-card"><div class="task">' + task + '</div>';
+      html += roleListHtml("R", roles.R);
+      html += roleListHtml("C", roles.C);
+      html += roleListHtml("I", roles.I);
+      html += '</div>';
+    });
+  });
+  if (!html) html = '<p class="empty">Nenhuma atividade encontrada para essa busca.</p>';
+  activityContentEl.innerHTML = html;
+}
+
+searchEl.addEventListener("input", (e) => renderActivityView(e.target.value));
+renderActivityView("");
+
+// ---------- Tab switching ----------
+const tabRole = document.getElementById("tab-role");
+const tabActivity = document.getElementById("tab-activity");
+const roleView = document.getElementById("role-view");
+const activityView = document.getElementById("activity-view");
+
+tabRole.addEventListener("click", () => {
+  tabRole.classList.add("active");
+  tabActivity.classList.remove("active");
+  roleView.style.display = "block";
+  activityView.style.display = "none";
+});
+tabActivity.addEventListener("click", () => {
+  tabActivity.classList.add("active");
+  tabRole.classList.remove("active");
+  activityView.style.display = "block";
+  roleView.style.display = "none";
+});
+</script>
+</body>
+</html>
